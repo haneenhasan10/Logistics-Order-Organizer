@@ -19,5 +19,5 @@ the AI was asked to write the prompt with strict constraints:
 - Map and normalize time-based urgency phrases into standard priority tiers (`urgent`, `high`, `medium`, `low`).
 
 ## What I Changed, Fixed, or Added Myself
-- **Robust JSON Regex Parsing:** Added an advanced extraction function (`extract_json_from_response`) utilizing Python’s `re` module to isolate JSON blocks and fallback formats from the raw LLM output.
+- **Enhancing LLM prompt**
 - **Dynamic Priority Scoring:** Designed a dictionary-based numerical scoring system (`PRIORITY_SCORE`) to  map text priorities to weights, enabling reliable Pandas sorting.
