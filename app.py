@@ -2,7 +2,7 @@ import json
 import re
 import subprocess
 import pandas as pd
-
+import streamlit as st
 
 # Name of the local LLM deployed via Ollama
 MODEL_NAME = "llama3:latest"
@@ -174,30 +174,70 @@ def extract_jobs(order_text: str):
     return cleaned
 
 
-def main():
+# Streamlit UI
 
-    """
-    Main execution function.
-    Extracts jobs,
-    sorts them by priority,
-    and displays them as a table.
-    """
+st.set_page_config(
+    page_title="Logistics Job Extractor",
+    page_icon="🚚",
+    layout="wide"
+)
 
-    jobs = extract_jobs(INPUT_TEXT)
+st.title("🚚 Logistics Job Extractor")
 
-    # convert list of dictionaries into DataFrame
-    df = pd.DataFrame(jobs)
+st.write("Convert messy logistics text into structured jobs using Ollama.")
 
-    # sort by priority score
-    df = df.sort_values(by="Score", ascending=False).reset_index(drop=True)
+default_text = (
+    "3x pipes to site B asap; deliver gloves (2 boxes) + 1 helmet to A tomorrow am; "
+    "URGENT cement to site D; pickup empty pallets from C; "
+    "H needs 5 vests by end of day"
+)
 
-    # Remove helper score column before displaying
-    display_df = df[["Stop", "Item", "Quantity", "Priority", "When"]]
+user_text = st.text_area(
+    "Enter logistics text:",
+    value=default_text,
+    height=180
+)
 
-    print("\nMessy text converted into structured data:\n")
-    print(display_df.to_string(index=False))
+if st.button("Extract Jobs", type="primary"):
 
+    if user_text.strip() == "":
+        st.warning("Please enter some text.")
+    else:
 
-# Execute the program only when running this file directly
-if __name__ == "__main__":
-    main()
+        with st.spinner("Extracting jobs..."):
+
+            try:
+
+                jobs = extract_jobs(user_text)
+
+                if len(jobs) == 0:
+                    st.warning("No jobs found.")
+
+                else:
+
+                    df = pd.DataFrame(jobs)
+
+                    df = df.sort_values(
+                        by="Score",
+                        ascending=False
+                    ).drop(columns=["Score"])
+
+                    st.success(f"{len(df)} jobs extracted.")
+
+                    st.dataframe(
+                        df,
+                        use_container_width=True,
+                        hide_index=True
+                    )
+
+                    csv = df.to_csv(index=False).encode("utf-8")
+
+                    st.download_button(
+                        "⬇ Download CSV",
+                        csv,
+                        file_name="logistics_jobs.csv",
+                        mime="text/csv"
+                    )
+
+            except Exception as e:
+                st.error(str(e))
