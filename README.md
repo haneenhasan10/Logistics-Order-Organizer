@@ -11,12 +11,14 @@ A logistics tool that utilizes a local Large Language Model (`llama3` via Ollama
 - **Data Structuring:** Converts responses safely into JSON and loads them into a `Pandas DataFrame`.
 - **Priority Sorting:** Sorts deliveries automatically by urgency weights.
 
+## The pipeline is as follows:
+INPUT_TEXT -> build_prompt -> call_ollama -> extract_json -> clean data ->
+
+DataFrame -> sort -> print
+
 ## What the AI Was Asked to Help Build
-the AI was asked to write the prompt with strict constraints:
-- Convert the raw text into a raw JSON array.
-- Avoid summarizing or omitting any items, quantities, or specific site letters.
-- Split multi-item sentences for the same stop into separate, individual rows.
-- Map and normalize time-based urgency phrases into standard priority tiers (`urgent`, `high`, `medium`, `low`).
+- the AI was asked to write the prompt with strict constraints
+- Baseline Extraction
 
 ## What I Changed, Fixed, or Added Myself
 - **Enhancing LLM prompt**
